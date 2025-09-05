@@ -11,14 +11,21 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: ["http://localhost:5173", "https://blog-app-vvcu.onrender.com"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+}));
 app.use(express.json());
 app.use(morgan('dev'));
 
 const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/blog_app';
 mongoose
   .connect(mongoUri)
-  .then(() => console.log('MongoDB connected'))
+  .then(() => {
+    console.log('MongoDB connected to DB:', mongoose.connection.name);
+  })
   .catch((err) => console.error('MongoDB connection error:', err));
 
 app.get('/', (req, res) => {
